@@ -1,8 +1,8 @@
+import Hero from "./_components/hero";
 
 const Landing = () => {
     return (
-        <div>
-        </div>
+        <Hero />
     )
 }
 
