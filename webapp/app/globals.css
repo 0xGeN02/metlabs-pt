@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-dark-blue: #1e1e3e;
+  --bg-white: #e9e9e9;
+}
+
