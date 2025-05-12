@@ -8,6 +8,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 // Esquema Zod
 const formSchema = z.object({
@@ -28,6 +29,7 @@ type FormData = z.infer<typeof formSchema>;
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
 
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -50,7 +52,7 @@ export default function LoginForm() {
 
   const handleGoogle = () => {
     authClient
-      .signIn.social({ provider: "google", callbackURL: "/profile" })
+      .signIn.social({ provider: "google", callbackURL: "/api/auth/sign-in/social" })
       .then(() => {
         toast.success("¡Inicio de sesión correcto!");
       })
@@ -62,13 +64,20 @@ export default function LoginForm() {
   const onSubmit = async (data: FormData) => {
     try {
       const loadingToast = toast.loading("Iniciando sesión...");
-      await authClient.signIn.email({
+      const response = await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        callbackURL: "/profile",
+        callbackURL: "/api/auth/login",
       });
-      toast.dismiss(loadingToast);
-      toast.success("¡Inicio de sesión correcto!");
+      if (!response || response.error) {
+        toast.dismiss(loadingToast);
+        toast.error("Error al iniciar sesión");
+      }
+      else{
+        toast.dismiss(loadingToast);
+        toast.success("¡Inicio de sesión correcto!");
+        router.push("/profile");
+      }
     } catch (error) {
       toast.error("Credenciales incorrectas");
       console.error("Error de autenticación:", error);
