@@ -76,6 +76,7 @@ export default function LoginForm() {
       else{
         toast.dismiss(loadingToast);
         toast.success("¡Inicio de sesión correcto!");
+        localStorage.setItem("user", JSON.stringify(response));
         router.push("/profile");
       }
     } catch (error) {

@@ -104,12 +104,13 @@ export default function RegisterForm() {
         toast.error(errorData.error || "Error al registrar usuario");
         return;
       }
-      
-      // Redirigir al usuario a la página de perfil
-      toast.dismiss(loadingToast);
-      toast.success("¡Registro exitoso!");
-      router.push("/profile");
-
+      else if (res.status === 200){
+        // Redirigir al usuario a la página de perfil
+        toast.dismiss(loadingToast);
+        toast.success("¡Registro exitoso!");
+        localStorage.setItem("user", JSON.stringify(data));
+        router.push("/profile");
+      }
     } catch (error) {
       toast.error("Error al registrar usuario");
       console.error("Error de registro:", error);

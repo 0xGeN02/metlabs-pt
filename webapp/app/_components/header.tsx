@@ -14,10 +14,19 @@ const languageOptions = [{ code: "es", flag: "🇪🇸" }];
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    console.log("Hay que implementar logica de login")
-  })
+    // Leer usuario de localStorage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setIsLoggedIn(true);
+      setUser(JSON.parse(storedUser));
+    } else {
+      setIsLoggedIn(false);
+      setUser(null);
+    }
+  }, []);
 
   const connectWallet = () => {
     console.log("Conectar wallet");
