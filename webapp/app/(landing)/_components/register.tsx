@@ -198,7 +198,7 @@ export default function RegisterForm() {
       </button>
       <p className="text-center text-sm mt-4">
         ¿Ya tienes cuenta?{' '}
-        <a href="/auth/login" className="text-orange-500 hover:underline">
+        <a href="/?form=login" className="text-orange-500 hover:underline">
           Inicia sesión
         </a>
       </p>

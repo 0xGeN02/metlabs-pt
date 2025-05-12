@@ -186,7 +186,7 @@ export default function LoginForm() {
 
       <p className="text-center text-sm mt-4">
         Si no tienes cuenta,{" "}
-        <a href="/auth/register" className="text-orange-500 hover:underline">
+        <a href="/?form=register" className="text-orange-500 hover:underline">
           regístrate ahora
         </a>
       </p>
