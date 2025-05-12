@@ -5,6 +5,7 @@ import { FaBars, FaTimes, FaWallet } from "react-icons/fa";
 import Image from "next/image";
 import onboard from "@/lib/web3-onboard"
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 
 type HeaderLink = { href: string; label: string; };
 const navLinks: HeaderLink[] = [
@@ -15,6 +16,7 @@ const navLinks: HeaderLink[] = [
 const languageOptions = [{ code: "es", flag: "🇪🇸" }];
 
 export default function Header() {
+  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
@@ -53,6 +55,8 @@ export default function Header() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`; // Show first 6 and last 4 characters
   };
 
+  const shouldShowWalletButton = !["/auth/login", "/auth/register"].includes(pathname);
+
   return (
     <header className="bg-[var(--bg-dark-blue)] text-white fixed w-full top-0 z-20">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -84,13 +88,15 @@ export default function Header() {
                   <span>{formatWalletAddress(walletAddress)}</span>
                 </span>
               ) : (
-                <button
-                  onClick={connectWallet}
-                  className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition"
-                >
-                  <FaWallet className="mr-2" />
-                  <span>Conectar Wallet</span>
-                </button>
+                shouldShowWalletButton && (
+                  <button
+                    onClick={connectWallet}
+                    className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition"
+                  >
+                    <FaWallet className="mr-2" />
+                    <span>Conectar Wallet</span>
+                  </button>
+                )
               )}
               
               {/* Imagen perfil usuario */}
@@ -156,10 +162,12 @@ export default function Header() {
                     {formatWalletAddress(walletAddress)}
                   </span>
                 ) : (
-                  <button onClick={connectWallet} className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
-                    <FaWallet className="mr-2" />
-                    Conectar Wallet
-                  </button>
+                  shouldShowWalletButton && (
+                    <button onClick={connectWallet} className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
+                      <FaWallet className="mr-2" />
+                      Conectar Wallet
+                    </button>
+                  )
                 )}
               </>
             ) : (
