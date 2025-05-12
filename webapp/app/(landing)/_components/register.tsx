@@ -92,6 +92,7 @@ export default function RegisterForm() {
           password: data.password,
           phone: data.phone,
           nationality: data.nationality,
+          sex: data.sex,
           birth_date: data.birth_date,
         }),
       });
