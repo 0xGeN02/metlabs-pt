@@ -9,7 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 // Esquema Zod para registro
 const registerSchema = z.object({
@@ -45,6 +45,7 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -103,12 +104,11 @@ export default function RegisterForm() {
         toast.error(errorData.error || "Error al registrar usuario");
         return;
       }
-
-      toast.dismiss(loadingToast);
-      toast.success("¡Registro exitoso!");
       
       // Redirigir al usuario a la página de perfil
-      <Link href={"/profile"} />;
+      toast.dismiss(loadingToast);
+      toast.success("¡Registro exitoso!");
+      router.push("/profile");
 
     } catch (error) {
       toast.error("Error al registrar usuario");
