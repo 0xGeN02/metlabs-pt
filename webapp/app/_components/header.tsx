@@ -55,7 +55,7 @@ export default function Header() {
     return `${address.slice(0, 6)}...${address.slice(-4)}`; // Show first 6 and last 4 characters
   };
 
-  const shouldShowWalletButton = !["/auth/login", "/auth/register"].includes(pathname);
+  const isProfileRoute = pathname === "/profile";
 
   return (
     <header className="bg-[var(--bg-dark-blue)] text-white fixed w-full top-0 z-20">
@@ -78,34 +78,24 @@ export default function Header() {
             <span className="text-lg">{languageOptions[0].flag}</span>
           </button>
 
-          {/* Botones condicionales según estado de login */}
-          {isLoggedIn ? (
-            <>
-              {/* Botón de conectar wallet */}
-              {walletAddress ? (
-                <span className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium">
-                  <FaWallet className="mr-2" />
-                  <span>{formatWalletAddress(walletAddress)}</span>
-                </span>
-              ) : (
-                shouldShowWalletButton && (
-                  <button
-                    onClick={connectWallet}
-                    className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition"
-                  >
-                    <FaWallet className="mr-2" />
-                    <span>Conectar Wallet</span>
-                  </button>
-                )
-              )}
-              
-              {/* Imagen perfil usuario */}
-              <Image src="/user_profile.png" alt="Profile" className="w-8 h-8 rounded-full" width={10} height={10}/>
-
-            </>
+          {/* Botones condicionales según la ruta */}
+          {isProfileRoute ? (
+            walletAddress ? (
+              <span className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium">
+                <FaWallet className="mr-2" />
+                <span>{formatWalletAddress(walletAddress)}</span>
+              </span>
+            ) : (
+              <button
+                onClick={connectWallet}
+                className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition"
+              >
+                <FaWallet className="mr-2" />
+                <span>Conectar Wallet</span>
+              </button>
+            )
           ) : (
             <>
-              {/* register / login para usuarios no logueados */}
               <Link
                 href="/?form=register"
                 className="hidden sm:inline-block px-4 py-1.5 bg-white text-[var(--bg-dark-blue)] rounded-md font-medium hover:opacity-90 transition"
@@ -152,30 +142,35 @@ export default function Header() {
               <span className="text-xl">{languageOptions[0].flag}</span>
               <span>ES</span>
             </button>
-            
+
             {/* Botones condicionales para móvil */}
-            {isLoggedIn ? (
-              <>
-                {walletAddress ? (
-                  <span className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
-                    <FaWallet className="mr-2" />
-                    {formatWalletAddress(walletAddress)}
-                  </span>
-                ) : (
-                  shouldShowWalletButton && (
-                    <button onClick={connectWallet} className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
-                      <FaWallet className="mr-2" />
-                      Conectar Wallet
-                    </button>
-                  )
-                )}
-              </>
+            {isProfileRoute ? (
+              walletAddress ? (
+                <span className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
+                  <FaWallet className="mr-2" />
+                  {formatWalletAddress(walletAddress)}
+                </span>
+              ) : (
+                <button
+                  onClick={connectWallet}
+                  className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md"
+                >
+                  <FaWallet className="mr-2" />
+                  Conectar Wallet
+                </button>
+              )
             ) : (
               <>
-                <Link href="/?form=register" className="block px-4 py-2 bg-white text-[var(--bg-dark-blue)] rounded-md text-center">
+                <Link
+                  href="/?form=register"
+                  className="block px-4 py-2 bg-white text-[var(--bg-dark-blue)] rounded-md text-center"
+                >
                   Registrarse
                 </Link>
-                <Link href="/?form=login" className="block px-4 py-2 border border-white rounded-md text-center">
+                <Link
+                  href="/?form=login"
+                  className="block px-4 py-2 border border-white rounded-md text-center"
+                >
                   Iniciar sesión
                 </Link>
               </>
