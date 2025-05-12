@@ -9,6 +9,8 @@ import { FaGoogle,
     FaEye,
     FaEyeSlash,
  } from "react-icons/fa6";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // Esquema Zod
 const formSchema = z.object({
@@ -27,8 +29,23 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 export default function Hero() {
-  const [accepted, setAccepted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+    const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    mode: "onChange", // Validación en tiempo real
+    defaultValues: {
+      email: "",
+      password: "",
+      accept: false,
+    }
+  });
+  const accepted = watch("accept");
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -36,40 +53,30 @@ export default function Hero() {
 
   const handleGoogle = () => {
     authClient
-      .signIn.social({ provider: "google", callbackURL: "/profile" })
-      .then(() => toast.success("¡Bienvenido!"))
-      .catch(() => toast.error("Error al iniciar sesión con Google"));
+        .signIn.social({ provider: "google", callbackURL: "/profile" })
+        .then(() => {
+            toast.success("¡Inicio de sesión correcto!");
+        })
+        .catch(() => {
+            toast.error("Error al iniciar sesión con Google");
+        });
   };
 
-  const handleCredentials = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    // Fetch de valores del form
-    const fd = new FormData(e.currentTarget);
-    const data = {
-      email: fd.get("email") as string,
-      password: fd.get("password") as string,
-      accept: fd.get("accept") === "on",
-    };
-
-    // Validación con Zod
-    const result = formSchema.safeParse(data);
-    if (!result.success) {
-      result.error.errors.forEach(err => {
-        toast.error(err.message);
-      });
-      return;
-    }
-
+  const onSubmit = async (data: FormData) => {
     try {
+      const loadingToast = toast.loading("Iniciando sesión...");
+      
       await authClient.signIn.email({
-        email: result.data.email,
-        password: result.data.password,
+        email: data.email,
+        password: data.password,
         callbackURL: "/profile",
       });
+      
+      toast.dismiss(loadingToast);
       toast.success("¡Inicio de sesión correcto!");
-    } catch {
+    } catch (error) {
       toast.error("Credenciales incorrectas");
+      console.error("Error de autenticación:", error);
     }
   };
 
@@ -78,21 +85,46 @@ export default function Hero() {
       <section className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl w-full px-6 py-16">
         {/* Imagen hexagonal */}
         <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0">
-          <div
-            className="w-80 h-80 overflow-hidden"
-            style={{
-              clipPath:
-                "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
-            }}
-          >
-            <Image
-              src="/building.webp"
-              alt="Edificio"
-              width={320}
-              height={320}
-              className="object-cover"
-            />
-          </div>
+            <div className="relative group">
+                {/* Sombra y efecto de brillo */}
+                <div 
+                className="absolute inset-0 w-80 h-80 bg-gradient-to-r from-blue-500 to-purple-600 opacity-75 blur-lg group-hover:opacity-100 transition-opacity duration-300"
+                style={{
+                    clipPath: "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
+                    transform: "scale(1.05)",
+                }}
+                ></div>
+                
+                {/* Borde */}
+                <div 
+                className="absolute inset-0 w-80 h-80 bg-white"
+                style={{
+                    clipPath: "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
+                    transform: "scale(1.02)",
+                }}
+                ></div>
+                
+                {/* Contenedor principal */}
+                <div
+                className="w-80 h-80 overflow-hidden relative transform transition-transform duration-300 group-hover:scale-[1.03] z-10"
+                style={{
+                    clipPath: "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
+                }}
+                >
+                {/* Overlay de color */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-dark-blue)]/0 to-[var(--bg-dark-blue)]/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
+                
+                {/* Imagen */}
+                <Image
+                    src="/building.webp"
+                    alt="Edificio"
+                    width={400}
+                    height={400}
+                    className="object-cover w-full h-full transform transition-transform duration-500 group-hover:scale-110"
+                    priority
+                />
+                </div>
+            </div>
         </div>
 
         {/* Formulario */}
@@ -101,7 +133,7 @@ export default function Hero() {
             ¡Bienvenido!
           </h2>
 
-          <form onSubmit={handleCredentials} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Email */}
             <div>
               <label
@@ -112,12 +144,16 @@ export default function Hero() {
               </label>
               <input
                 id="email"
-                name="email"
                 type="email"
                 placeholder="tu@email.com"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)]"
+                className={`w-full px-3 py-2 border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)]`}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+              )}
             </div>
 
             {/* Contraseña */}
@@ -131,42 +167,51 @@ export default function Hero() {
               <div className="relative">
                 <input
                   id="password"
-                  name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)] pr-10"
+                  className={`w-full px-3 py-2 border ${
+                    errors.password ? "border-red-500" : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)] pr-10`}
+                  {...register("password")}
                 />
                 <button
-                type="button"
-                onClick={togglePasswordVisibility}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Aceptar términos */}
             <div className="flex items-center">
               <input
                 id="accept"
-                name="accept"
                 type="checkbox"
-                checked={accepted}
-                onChange={(e) => setAccepted(e.target.checked)}
                 className="h-4 w-4 text-indigo-600 rounded border-gray-300"
+                {...register("accept")}
               />
               <label htmlFor="accept" className="ml-2 text-sm">
                 Aceptar los términos y condiciones de privacidad
               </label>
             </div>
+            {errors.accept && (
+              <p className="text-red-500 text-xs">{errors.accept.message}</p>
+            )}
 
             {/* Botón login */}
             <button
               type="submit"
               disabled={!accepted}
-              className="w-full py-3 rounded-lg bg-gray-200 text-gray-500 disabled:cursor-not-allowed"
+              className={`w-full py-3 rounded-lg ${
+                accepted
+                  ? "bg-[var(--bg-dark-blue)] text-white hover:bg-[var(--bg-dark-blue)]/90"
+                  : "bg-gray-200 text-gray-500"
+              } disabled:cursor-not-allowed transition`}
             >
               Iniciar sesión
             </button>
