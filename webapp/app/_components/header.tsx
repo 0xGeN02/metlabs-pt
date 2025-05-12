@@ -17,7 +17,7 @@ export default function Header() {
   return (
     <header className="bg-[var(--bg-dark-blue)] text-white fixed w-full top-0 z-20">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-2xl font-bold">LOGO</Link>
+        <Link href="/" className="text-4xl font-bold">LOGO</Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex space-x-8">
