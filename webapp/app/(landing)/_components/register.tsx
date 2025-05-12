@@ -9,6 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 
 // Esquema Zod para registro
 const registerSchema = z.object({
@@ -22,6 +23,15 @@ const registerSchema = z.object({
       "La contraseña debe contener mayúscula, minúscula, número y un caracter especial"
     ),
   confirmPassword: z.string(),
+  phone: z.string().min(9, "El teléfono es obligatorio"),
+  nationality: z.string().min(2, "La nacionalidad es obligatoria"),
+  sex: z.enum(["male", "female"], {required_error: "El sexo es obligatorio"}),
+  birth_date: z.string().refine((date) => {
+    const d = new Date(date);
+    const today = new Date();
+    const age = today.getFullYear() - d.getFullYear();
+    return !isNaN(d.getTime()) && age >= 18;
+  }, "Debes tener al menos 18 años para registrarte"),
   accept: z.literal(true, {
     errorMap: () => ({ message: "Debes aceptar los términos y condiciones" }),
   }),
@@ -48,6 +58,9 @@ export default function RegisterForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      phone: "",
+      nationality: "",
+      birth_date: "",
       accept: undefined,
     },
   });
@@ -70,15 +83,32 @@ export default function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const loadingToast = toast.loading("Registrando usuario...");
-      // Aquí deberías llamar a tu endpoint de registro
-      await authClient.signUp.email({
-        email: data.email,
-        password: data.password,
-        name: data.name,
-        callbackURL: "/profile",
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          phone: data.phone,
+          nationality: data.nationality,
+          birth_date: data.birth_date,
+        }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        toast.dismiss(loadingToast);
+        toast.error(errorData.error || "Error al registrar usuario");
+        return;
+      }
+
       toast.dismiss(loadingToast);
       toast.success("¡Registro exitoso!");
+      
+      // Redirigir al usuario a la página de perfil
+      <Link href={"/profile"} />;
+
     } catch (error) {
       toast.error("Error al registrar usuario");
       console.error("Error de registro:", error);
@@ -115,6 +145,64 @@ export default function RegisterForm() {
             {...register("email")}
           />
           {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+        </div>
+        {/* Teléfono */}
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+            Teléfono
+          </label>
+          <input
+            id="phone"
+            type="text"
+            placeholder="Tu teléfono"
+            className={`w-full px-3 py-2 border ${errors.phone ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)]`}
+            {...register("phone")}
+          />
+          {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
+        </div>
+        {/* Sexo */}
+        <div>
+          <label htmlFor="sex" className="block text-sm font-medium text-gray-700 mb-1">
+            Sexo
+          </label>
+          <select
+            id="sex"
+            className={`w-full px-3 py-2 border ${errors.sex ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)]`}
+            {...register("sex")}
+            defaultValue=""
+          >
+            <option value="" disabled>Selecciona tu sexo</option>
+            <option value="male">Masculino</option>
+            <option value="female">Femenino</option>
+          </select>
+          {errors.sex && <p className="text-red-500 text-xs mt-1">{errors.sex.message}</p>}
+        </div>
+        {/* Nacionalidad */}
+        <div>
+          <label htmlFor="nationality" className="block text-sm font-medium text-gray-700 mb-1">
+            Nacionalidad
+          </label>
+          <input
+            id="nationality"
+            type="text"
+            placeholder="Tu nacionalidad"
+            className={`w-full px-3 py-2 border ${errors.nationality ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)]`}
+            {...register("nationality")}
+          />
+          {errors.nationality && <p className="text-red-500 text-xs mt-1">{errors.nationality.message}</p>}
+        </div>
+        {/* Fecha de nacimiento */}
+        <div>
+          <label htmlFor="birth_date" className="block text-sm font-medium text-gray-700 mb-1">
+            Fecha de nacimiento
+          </label>
+          <input
+            id="birth_date"
+            type="date"
+            className={`w-full px-3 py-2 border ${errors.birth_date ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)]`}
+            {...register("birth_date")}
+          />
+          {errors.birth_date && <p className="text-red-500 text-xs mt-1">{errors.birth_date.message}</p>}
         </div>
         {/* Contraseña */}
         <div>
