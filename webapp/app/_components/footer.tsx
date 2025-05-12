@@ -36,11 +36,22 @@ const legalLinks: FooterLink[] = [
 
 const Footer = () => (
   <footer className="bg-[var(--bg-dark-blue)] text-white mt-16">
-    <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-5 gap-8">
+    <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 py-12 grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-20">
 
       {/* Brand + copyright */}
       <div className="order-1 md:order-1 space-y-4">
         <h2 className="text-2xl font-bold">LOGO</h2>
+        {/* Redes sociales solo en escritorio */}
+        <div className="hidden md:flex space-x-4 text-xl">
+          {socialLinks.map((l) => (
+            <a
+              key={l.ariaLabel}
+              href={l.href}
+              aria-label={l.ariaLabel}
+              className="hover:text-gray-300"
+            >{l.icon}</a>
+          ))}
+        </div>
         <p className="hidden md:block text-sm">&copy; 2025. All rights reserved.</p>
       </div>
 
@@ -84,7 +95,8 @@ const Footer = () => (
       <div className="order-5 md:order-5 space-y-4">
         {/* Título sólo en móvil */}
         <h3 className="text-lg font-semibold mb-2 md:hidden">Síguenos</h3>
-        <div className="flex space-x-4 text-xl">
+        {/* Redes sociales solo en móvil */}
+        <div className="flex md:hidden space-x-4 text-xl">
           {socialLinks.map((l) => (
             <a
               key={l.ariaLabel}

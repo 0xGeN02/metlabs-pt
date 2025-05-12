@@ -82,49 +82,28 @@ export default function Hero() {
 
   return (
     <main className="min-h-screen flex flex-col items-center pt-24 pb-12">
-      <section className="flex flex-col-reverse md:flex-row items-center justify-between max-w-6xl w-full px-6 py-16">
+      <section className="flex flex-col md:flex-row items-center justify-between max-w-6xl w-full px-6 py-16">
         {/* Imagen hexagonal */}
         <div className="w-full md:w-1/2 flex justify-center mb-10 md:mb-0">
-            <div className="relative group">
-                {/* Sombra y efecto de brillo */}
-                <div 
-                className="absolute inset-0 w-80 h-80 bg-gradient-to-r from-blue-500 to-purple-600 opacity-75 blur-lg group-hover:opacity-100 transition-opacity duration-300"
-                style={{
-                    clipPath: "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
-                    transform: "scale(1.05)",
-                }}
-                ></div>
-                
-                {/* Borde */}
-                <div 
-                className="absolute inset-0 w-80 h-80 bg-white"
-                style={{
-                    clipPath: "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
-                    transform: "scale(1.02)",
-                }}
-                ></div>
-                
-                {/* Contenedor principal */}
-                <div
-                className="w-80 h-80 overflow-hidden relative transform transition-transform duration-300 group-hover:scale-[1.03] z-10"
-                style={{
-                    clipPath: "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
-                }}
-                >
-                {/* Overlay de color */}
-                <div className="absolute inset-0 bg-gradient-to-b from-[var(--bg-dark-blue)]/0 to-[var(--bg-dark-blue)]/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-                
-                {/* Imagen */}
-                <Image
-                    src="/building.webp"
-                    alt="Edificio"
-                    width={400}
-                    height={400}
-                    className="object-cover w-full h-full transform transition-transform duration-500 group-hover:scale-110"
-                    priority
-                />
-                </div>
+          <div className="relative group">
+            {/* Contenedor principal */}
+            <div
+              className="w-100 h-100 overflow-hidden relative transform transition-transform duration-300 group-hover:scale-[1.03] z-10"
+              style={{
+                clipPath: "polygon(25% 6.7%,75% 6.7%,100% 50%,75% 93.3%,25% 93.3%,0% 50%)",
+              }}
+            >
+              {/* Imagen */}
+              <Image
+                src="/building.webp"
+                alt="Edificio"
+                width={400}
+                height={400}
+                className="object-cover w-full h-full transform transition-transform duration-500 group-hover:scale-110"
+                priority
+              />
             </div>
+          </div>
         </div>
 
         {/* Formulario */}
