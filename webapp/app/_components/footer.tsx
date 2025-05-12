@@ -19,8 +19,8 @@ const socialLinks: SocialLink[] = [
 
 const categoryLinks: FooterLink[] = [
   { href: "/real-state",    label: "Inmobiliaria" },
-  { href: "/agrobusiness",  label: "Agrícola" },
   { href: "/solar",         label: "Solar" },
+  { href: "/agrobusiness",  label: "Agrícola" },
 ];
 
 const helpLinks: FooterLink[] = [
@@ -36,7 +36,7 @@ const legalLinks: FooterLink[] = [
 
 const Footer = () => (
   <footer className="bg-[var(--bg-dark-blue)] text-white mt-16">
-    <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-20 py-12 grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-20">
+  <div className="max-w-6xl mx-auto px-8 sm:px-10 md:px-12 lg:px-20 py-12 grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-20">
 
       {/* Brand + copyright */}
       <div className="order-1 md:order-1 space-y-4">
@@ -52,11 +52,11 @@ const Footer = () => (
             >{l.icon}</a>
           ))}
         </div>
-        <p className="hidden md:block text-sm">&copy; 2025. All rights reserved.</p>
+        <p className="hidden md:block text-sm whitespace-nowrap">&copy; 2025. All rights reserved.</p>
       </div>
 
       {/* Categorías */}
-      <div className="order-2 md:order-2">
+      <div className="order-2 md:order-2 md:ml-8">
         <h3 className="text-lg font-semibold mb-3">Categorías</h3>
         <ul className="space-y-2 text-sm">
           {categoryLinks.map((l) => (
@@ -85,7 +85,7 @@ const Footer = () => (
         <ul className="space-y-2 text-sm">
           {legalLinks.map((l) => (
             <li key={l.href}>
-              <a href={l.href} className="hover:text-gray-300">{l.label}</a>
+              <a href={l.href} className="hover:text-gray-300 whitespace-nowrap">{l.label}</a>
             </li>
           ))}
         </ul>
@@ -107,7 +107,7 @@ const Footer = () => (
           ))}
         </div>
         {/* copyright en móvil */}
-        <p className="text-sm mt-4 md:hidden">&copy; 2025. All rights reserved.</p>
+        <p className="text-sm mt-4 md:hidden whitespace-nowrap">&copy; 2025. All rights reserved.</p>
       </div>
     </div>
   </footer>
