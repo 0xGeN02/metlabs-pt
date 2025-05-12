@@ -8,7 +8,7 @@ import { z } from "zod";
 import { FaGoogle,
     FaEye,
     FaEyeSlash,
- } from "react-icons/fa6";
+} from "react-icons/fa6";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -19,8 +19,8 @@ const formSchema = z.object({
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres")
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-      "La contraseña debe contener mayúscula, minúscula y número"
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/,
+      "La contraseña debe contener mayúscula, minúscula, número y un caracter especial"
     ),
   accept: z.literal(true, {
     errorMap: () => ({ message: "Debes aceptar los términos y condiciones" }),
@@ -42,7 +42,7 @@ export default function Hero() {
     defaultValues: {
       email: "",
       password: "",
-      accept: false,
+      accept: undefined,
     }
   });
   const accepted = watch("accept");
