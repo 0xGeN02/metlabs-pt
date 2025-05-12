@@ -18,6 +18,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null); // Add state for wallet address
 
   useEffect(() => {
     // Leer usuario de localStorage
@@ -31,22 +32,27 @@ export default function Header() {
     }
   }, []);
 
-const connectWallet = async () => {
-  const wallets = await onboard.connectWallet()
-  if (wallets && wallets.length > 0) {
-    const address = wallets[0].accounts[0].address
-    await fetch('/api/user/wallet', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${user?.token}`
-       },
-      body: JSON.stringify({ address }),
-    })
-    toast.info(`Wallet ${address} conectada`)
-  }
-}
-  
+  const connectWallet = async () => {
+    const wallets = await onboard.connectWallet();
+    if (wallets && wallets.length > 0) {
+      const address = wallets[0].accounts[0].address;
+      await fetch('/api/user/wallet', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user?.token}`
+        },
+        body: JSON.stringify({ address }),
+      });
+      toast.info(`Wallet conectada`);
+      setWalletAddress(address);
+    }
+  };
+
+  const formatWalletAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`; // Show first 6 and last 4 characters
+  };
+
   return (
     <header className="bg-[var(--bg-dark-blue)] text-white fixed w-full top-0 z-20">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -72,13 +78,20 @@ const connectWallet = async () => {
           {isLoggedIn ? (
             <>
               {/* Botón de conectar wallet */}
-              <button
-                onClick={connectWallet}
-                className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition"
-              >
-                <FaWallet className="mr-2" />
-                <span>Conectar Wallet</span>
-              </button>
+              {walletAddress ? (
+                <span className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium">
+                  <FaWallet className="mr-2" />
+                  <span>{formatWalletAddress(walletAddress)}</span>
+                </span>
+              ) : (
+                <button
+                  onClick={connectWallet}
+                  className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition"
+                >
+                  <FaWallet className="mr-2" />
+                  <span>Conectar Wallet</span>
+                </button>
+              )}
               
               {/* Imagen perfil usuario */}
               <Image src="/user_profile.png" alt="Profile" className="w-8 h-8 rounded-full" width={10} height={10}/>
@@ -137,13 +150,17 @@ const connectWallet = async () => {
             {/* Botones condicionales para móvil */}
             {isLoggedIn ? (
               <>
-                <button onClick={connectWallet} className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
-                  <FaWallet className="mr-2" />
-                  Conectar Wallet
-                </button>
-                <Link href="/profile" className="block px-4 py-2 border border-white rounded-md text-center">
-                  Mi Perfil
-                </Link>
+                {walletAddress ? (
+                  <span className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
+                    <FaWallet className="mr-2" />
+                    {formatWalletAddress(walletAddress)}
+                  </span>
+                ) : (
+                  <button onClick={connectWallet} className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
+                    <FaWallet className="mr-2" />
+                    Conectar Wallet
+                  </button>
+                )}
               </>
             ) : (
               <>
