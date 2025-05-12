@@ -37,11 +37,11 @@ export default function Header() {
 
           {/* register / login */}
           <Link
-            href="#"
+            href="/?form=register"
             className="hidden sm:inline-block px-4 py-1.5 bg-white text-[var(--bg-dark-blue)] rounded-md font-medium hover:opacity-90 transition"
           >Registrarse</Link>
           <Link
-            href="#"
+            href="/?form=login"
             className="hidden sm:inline-block px-4 py-1.5 border border-white rounded-md hover:bg-white/10 transition"
           >Iniciar sesión</Link>
 
@@ -74,10 +74,10 @@ export default function Header() {
               <span className="text-xl">{languageOptions[0].flag}</span>
               <span>ES</span>
             </button>
-            <Link href="#" className="block px-4 py-2 bg-white text-[var(--bg-dark-blue)] rounded-md text-center">
+            <Link href="/?form=register" className="block px-4 py-2 bg-white text-[var(--bg-dark-blue)] rounded-md text-center">
               Registrarse
             </Link>
-            <Link href="#" className="block px-4 py-2 border border-white rounded-md text-center">
+            <Link href="/?form=login" className="block px-4 py-2 border border-white rounded-md text-center">
               Iniciar sesión
             </Link>
           </div>
