@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaBars, FaTimes, FaWallet } from "react-icons/fa";
 import Image from "next/image";
+import onboard from "@/lib/web3-onboard"
+
 type HeaderLink = { href: string; label: string; };
 const navLinks: HeaderLink[] = [
   { href: "/catalog",    label: "Catálogo" },
@@ -28,8 +30,12 @@ export default function Header() {
     }
   }, []);
 
-  const connectWallet = () => {
-    console.log("Conectar wallet");
+  const connectWallet = async () => {
+    const wallets = await onboard.connectWallet()
+    // Puedes guardar el wallet en el estado si lo necesitas
+    if (wallets && wallets.length > 0) {
+      console.log('Wallet conectada:', wallets[0])
+    }
   }
   
   return (
