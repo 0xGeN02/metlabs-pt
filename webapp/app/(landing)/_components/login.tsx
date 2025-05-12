@@ -67,7 +67,7 @@ export default function LoginForm() {
       const response = await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        callbackURL: "/api/auth/login",
+        callbackURL: "/api/auth/sign-in/email",
       });
       if (!response || response.error) {
         toast.dismiss(loadingToast);
