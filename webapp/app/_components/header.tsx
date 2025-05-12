@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FaBars, FaTimes, FaWallet } from "react-icons/fa";
 import Image from "next/image";
 import onboard from "@/lib/web3-onboard"
+import { toast } from "sonner";
 
 type HeaderLink = { href: string; label: string; };
 const navLinks: HeaderLink[] = [
@@ -30,13 +31,21 @@ export default function Header() {
     }
   }, []);
 
-  const connectWallet = async () => {
-    const wallets = await onboard.connectWallet()
-    // Puedes guardar el wallet en el estado si lo necesitas
-    if (wallets && wallets.length > 0) {
-      console.log('Wallet conectada:', wallets[0])
-    }
+const connectWallet = async () => {
+  const wallets = await onboard.connectWallet()
+  if (wallets && wallets.length > 0) {
+    const address = wallets[0].accounts[0].address
+    await fetch('/api/user/wallet', {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${user?.token}`
+       },
+      body: JSON.stringify({ address }),
+    })
+    toast.info(`Wallet ${address} conectada`)
   }
+}
   
   return (
     <header className="bg-[var(--bg-dark-blue)] text-white fixed w-full top-0 z-20">

@@ -64,23 +64,37 @@ export default function LoginForm() {
   const onSubmit = async (data: FormData) => {
     try {
       const loadingToast = toast.loading("Iniciando sesión...");
-      const response = await authClient.signIn.email({
-        email: data.email,
-        password: data.password,
-        callbackURL: "/api/auth/sign-in/email",
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
       });
-      if (!response || response.error) {
+
+      const responseData = await res.json();
+
+      if (!res.ok) {
         toast.dismiss(loadingToast);
-        toast.error("Error al iniciar sesión");
+        toast.error(responseData.error || "Error al iniciar sesión");
+        return;
       }
-      else{
+
+      if (responseData.user && responseData.user.token) {
         toast.dismiss(loadingToast);
         toast.success("¡Inicio de sesión correcto!");
-        localStorage.setItem("user", JSON.stringify(response));
+
+        // Guarda el token y los datos del usuario
+        localStorage.setItem("user", JSON.stringify(responseData.user));
+
         router.push("/profile");
+      } else {
+        toast.dismiss(loadingToast);
+        toast.error("Respuesta de inicio de sesión incompleta");
       }
     } catch (error) {
-      toast.error("Credenciales incorrectas");
+      toast.error("Error al iniciar sesión");
       console.error("Error de autenticación:", error);
     }
   };

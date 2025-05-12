@@ -98,17 +98,19 @@ export default function RegisterForm() {
         }),
       });
 
+      const responseData = await res.json();
       if (!res.ok) {
         const errorData = await res.json();
         toast.dismiss(loadingToast);
         toast.error(errorData.error || "Error al registrar usuario");
         return;
       }
-      else if (res.status === 200){
+      if (responseData.user && responseData.user.token) {
         // Redirigir al usuario a la página de perfil
         toast.dismiss(loadingToast);
         toast.success("¡Registro exitoso!");
-        localStorage.setItem("user", JSON.stringify(data));
+
+        localStorage.setItem("user", JSON.stringify(responseData.user));
         router.push("/profile");
       }
     } catch (error) {
