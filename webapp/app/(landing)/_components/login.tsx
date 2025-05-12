@@ -4,7 +4,8 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { z } from "zod";
-import { FaGoogle, FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
+import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -180,7 +181,7 @@ export default function LoginForm() {
         onClick={handleGoogle}
         className="w-full flex items-center justify-center border-2 border-[var(--bg-dark-blue)] rounded-lg py-3 hover:bg-[var(--bg-dark-blue)]/10 transition"
       >
-        <FaGoogle className="mr-3" />
+        <FcGoogle className="mr-3" size={24}/>
         Continúa con Google
       </button>
 
