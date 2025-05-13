@@ -48,7 +48,7 @@ curl -i -X POST http://localhost:3010/api/auth/register \
 
 ### 2. Login
 
-**Endpoint:** `/api/auth/sign-in/email`
+**Endpoint:** `/api/auth/login`
 
 **Method:** `POST`
 
@@ -66,7 +66,7 @@ curl -i -X POST http://localhost:3010/api/auth/register \
 **Example cURL Command:**
 
 ```bash
-curl -i -X POST http://localhost:3010/api/auth/sign-in/email \
+curl -i -X POST http://localhost:3010/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"aaa@aaa.aa","password":"Aa123456789-"}'
 ```

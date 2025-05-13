@@ -87,10 +87,23 @@ export async function getSigner() {
   return provider.getSigner();
 }
 
-// Function to connect the contract with the user's signer
-export async function getContractWithSigner(contractAddress: string, abi: any) {
-  const signer = await getSigner();
-  return new ethers.Contract(contractAddress, abi, signer);
+// Function to get the balance of the connected wallet
+export async function getWalletBalance() {
+  const wallets = await onboard.connectWallet();
+  if (wallets.length === 0) {
+    throw new Error('No wallet connected');
+  }
+
+  const provider = new ethers.BrowserProvider(wallets[0].provider, 'any');
+  const address = wallets[0].accounts[0].address;
+
+  // Get the balance of the wallet
+  const balance = await provider.getBalance(address);
+
+  // Convert balance from Wei to Ether
+  const balanceInEther = ethers.formatEther(balance);
+
+  return { address, balance: balanceInEther };
 }
 
 export default onboard
