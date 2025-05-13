@@ -101,6 +101,38 @@ The project requires the following environment variables to be set in a `.env` f
    npm run dev
    ```
 
+## Backend as a Submodule
+
+The backend (`metlabs-pt-back`) is included as a submodule in this repository. This allows for better separation of concerns and easier management of the backend and frontend codebases.
+
+### Cloning the Repository with Submodules
+
+To clone the repository along with the backend submodule, use the following command:
+
+```bash
+git clone --recurse-submodules <repository-url>
+```
+
+If you have already cloned the repository without the submodule, you can initialize and update the submodule with:
+
+```bash
+git submodule update --init --recursive
+```
+
+### Updating the Backend Submodule
+
+To pull the latest changes for the backend submodule, navigate to the submodule directory and pull the changes:
+
+```bash
+cd metlabs-pt-back
+git pull origin main
+```
+
+### Additional Notes
+
+- Ensure you have the necessary permissions to access the backend submodule repository.
+- Always keep the submodule updated to avoid compatibility issues between the frontend and backend.
+
 ## Notes
 
 - Ensure the `.env` file is properly configured before running the project.
