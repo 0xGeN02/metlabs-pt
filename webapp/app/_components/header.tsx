@@ -2,8 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaBars, FaTimes, FaWallet } from "react-icons/fa";
-import Image from "next/image";
-import onboard from "@/lib/web3-onboard"
+import { onboard } from "@/lib/web3-onboard"
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 
@@ -96,6 +95,15 @@ export default function Header() {
             )
           ) : (
             <>
+              {user?.profilePicture && (
+                <img
+                  src="/user_profile.png"
+                  alt="Foto de perfil"
+                  width={40}
+                  height={40}
+                  className="hidden sm:block w-10 h-10 rounded-full object-cover"
+                />
+              )}
               <Link
                 href="/?form=register"
                 className="hidden sm:inline-block px-4 py-1.5 bg-white text-[var(--bg-dark-blue)] rounded-md font-medium hover:opacity-90 transition"
@@ -161,6 +169,16 @@ export default function Header() {
               )
             ) : (
               <>
+                 (
+                user?.profilePicture && (
+                  <img
+                    src="/user_profile.png"
+                    alt="Foto de perfil"
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full object-cover mb-2"
+                  />
+                )
                 <Link
                   href="/?form=register"
                   className="block px-4 py-2 bg-white text-[var(--bg-dark-blue)] rounded-md text-center"

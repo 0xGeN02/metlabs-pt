@@ -91,7 +91,8 @@ export default function LoginForm() {
         toast.dismiss(loadingToast);
         toast.success("¡Inicio de sesión correcto!");
 
-        // Guarda el token y los datos del usuario
+        // Guarda el token y los datos del usuario en localStorage
+        localStorage.setItem("jwt", responseData.user.token);
         localStorage.setItem("user", JSON.stringify(responseData.user));
 
         router.push("/profile");

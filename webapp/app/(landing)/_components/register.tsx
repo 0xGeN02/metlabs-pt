@@ -116,7 +116,10 @@ export default function RegisterForm() {
         toast.dismiss(loadingToast);
         toast.success("¡Registro exitoso!");
 
+        // Guarda el token y los datos del usuario en localStorage
+        localStorage.setItem("jwt", responseData.user.token);
         localStorage.setItem("user", JSON.stringify(responseData.user));
+
         router.push("/profile");
       }
     } catch (error) {

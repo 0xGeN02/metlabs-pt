@@ -7,7 +7,7 @@ interface WalletData {
   balance: number;
 }
 
-const WalletSection = () => {
+const WalletSection = (props: {jwt: string}) => {
   const [walletData, setWalletData] = useState<WalletData | null>(null);
 
   const depositSchema = z.object({

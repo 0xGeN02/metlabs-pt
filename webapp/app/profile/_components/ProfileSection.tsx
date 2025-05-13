@@ -10,7 +10,7 @@ if (!serverHost) {
   throw new Error('NEXT_PUBLIC_BETTER_AUTH_URL is not defined');
 }
 
-const ProfileSection = () => {
+const ProfileSection = (props: {jwt: string}) => {
   const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {

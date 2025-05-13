@@ -13,7 +13,7 @@ if (!alchemyApiKey) {
   throw new Error('Alchemy API key is not defined in environment variables')
 }
 
-const onboard = Onboard({
+export const onboard = Onboard({
   wallets: [injected, walletConnect, coinbase],
   chains: [
     {
@@ -31,79 +31,3 @@ const onboard = Onboard({
   theme: 'dark'
 })
 
-// Función para registrar la wallet del usuario en la base de datos
-async function registerWallet(address: string) {
-  try {
-    const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-
-    if (!token) {
-      throw new Error('No se encontró el token de autenticación');
-    }
-
-    const response = await fetch('/api/wallet', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ address })
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Error al registrar la wallet');
-    }
-
-    console.log('Wallet registrada exitosamente');
-  } catch (error) {
-    console.error('Error al registrar la wallet:', error);
-    throw error;
-  }
-}
-
-// Function to get the connected wallet's address
-export async function getConnectedWallet() {
-  const wallets = await onboard.connectWallet();
-  if (wallets.length === 0) {
-    throw new Error('No wallet connected');
-  }
-
-  const address = wallets[0].accounts[0].address;
-
-  // Registrar la wallet en la base de datos
-  await registerWallet(address);
-
-  return address;
-}
-
-// Function to get the signer for the connected wallet
-export async function getSigner() {
-  const wallets = await onboard.connectWallet();
-  if (wallets.length === 0) {
-    throw new Error('No wallet connected');
-  }
-
-  const provider = new ethers.BrowserProvider(wallets[0].provider, 'any');
-  return provider.getSigner();
-}
-
-// Function to get the balance of the connected wallet
-export async function getWalletBalance() {
-  const wallets = await onboard.connectWallet();
-  if (wallets.length === 0) {
-    throw new Error('No wallet connected');
-  }
-
-  const provider = new ethers.BrowserProvider(wallets[0].provider, 'any');
-  const address = wallets[0].accounts[0].address;
-
-  // Get the balance of the wallet
-  const balance = await provider.getBalance(address);
-
-  // Convert balance from Wei to Ether
-  const balanceInEther = ethers.formatEther(balance);
-
-  return { address, balance: balanceInEther };
-}
-
-export default onboard
