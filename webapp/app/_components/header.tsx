@@ -2,15 +2,15 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaBars, FaTimes, FaWallet } from "react-icons/fa";
-import { onboard } from "@/lib/web3-onboard"
+import { onboard } from "@/lib/web3-onboard";
 import { toast } from "sonner";
 import { usePathname } from "next/navigation";
 
-type HeaderLink = { href: string; label: string; };
+type HeaderLink = { href: string; label: string };
 const navLinks: HeaderLink[] = [
-  { href: "/catalog",    label: "Catálogo" },
-  { href: "/team",       label: "Quiénes somos" },
-  { href: "/support",    label: "Soporte" },
+  { href: "/catalog", label: "Catálogo" },
+  { href: "/team", label: "Quiénes somos" },
+  { href: "/support", label: "Soporte" },
 ];
 const languageOptions = [{ code: "es", flag: "🇪🇸" }];
 
@@ -19,7 +19,8 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<any>(null);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null); // Add state for wallet address
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+  const [walletData, setWalletData] = useState<any>(null);
 
   useEffect(() => {
     // Leer usuario de localStorage
@@ -38,11 +39,11 @@ export default function Header() {
 
     if (wallets && wallets.length > 0) {
       const address = wallets[0].accounts[0].address;
-      await fetch('http://localhost:3000/api/wallet', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user?.token}`
+      await fetch("http://localhost:3000/api/wallet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user?.token}`,
         },
         body: JSON.stringify({ address, userId: user?.id }),
       });
@@ -51,8 +52,45 @@ export default function Header() {
     }
   };
 
+  const disconnectWallet = () => {
+    onboard.disconnectWallet({ label: "MetaMask" }); // Desconectar wallet (puedes ajustar el label según el proveedor)
+    setWalletAddress(null);
+    setWalletData(null);
+    toast.info("Wallet desconectada");
+  };
+
+  useEffect(() => {
+    // Fetch wallet section data when wallet is connected
+    const fetchWalletData = async () => {
+      if (walletAddress) {
+        try {
+          const response = await fetch(
+            `http://localhost:3000/api/wallet/section?address=${walletAddress}`,
+            {
+              headers: {
+                Authorization: `Bearer ${user?.token}`,
+              },
+            }
+          );
+          if (response.ok) {
+            const data = await response.json();
+            setWalletData(data);
+            toast.success("Datos de la wallet cargados correctamente");
+          } else {
+            toast.error("Error al cargar los datos de la wallet");
+          }
+        } catch (error) {
+          console.error("Error fetching wallet data:", error);
+          toast.error("Error al cargar los datos de la wallet");
+        }
+      }
+    };
+
+    fetchWalletData();
+  }, [walletAddress, user?.token]);
+
   const formatWalletAddress = (address: string) => {
-    return `${address.slice(0, 6)}...${address.slice(-4)}`; // Show first 6 and last 4 characters
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   const isProfileRoute = pathname === "/profile";
@@ -60,7 +98,9 @@ export default function Header() {
   return (
     <header className="bg-[var(--bg-dark-blue)] text-white fixed w-full top-0 z-20">
       <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-4xl font-bold">LOGO</Link>
+        <Link href="/" className="text-4xl font-bold">
+          LOGO
+        </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex space-x-8">
@@ -73,18 +113,25 @@ export default function Header() {
 
         {/* Right buttons */}
         <div className="flex items-center space-x-4">
-          {/* idioma */}
           <button className="hidden sm:flex items-center space-x-1 hover:opacity-80">
             <span className="text-lg">{languageOptions[0].flag}</span>
           </button>
 
-          {/* Botones condicionales según la ruta */}
           {isProfileRoute ? (
             walletAddress ? (
-              <span className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium">
-                <FaWallet className="mr-2" />
-                <span>{formatWalletAddress(walletAddress)}</span>
-              </span>
+              <div className="flex items-center space-x-4">
+                <span className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium">
+                  <FaWallet className="mr-2" />
+                  <span>{formatWalletAddress(walletAddress)}</span>
+                </span>
+                <button
+                  onClick={disconnectWallet}
+                  className="hidden sm:flex items-center space-x-1 px-3 py-1 bg-red-500 text-white rounded-md font-medium hover:bg-red-600 transition"
+                >
+                  <FaTimes className="mr-1" />
+                  <span>Desconectar</span>
+                </button>
+              </div>
             ) : (
               <button
                 onClick={connectWallet}
@@ -120,7 +167,6 @@ export default function Header() {
             </>
           )}
 
-          {/* mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden text-xl"
@@ -131,7 +177,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <nav className="md:hidden bg-[var(--bg-dark-blue)] px-6 pb-6 space-y-4">
           {navLinks.map((l) => (
@@ -145,56 +190,40 @@ export default function Header() {
             </Link>
           ))}
 
-          {/* idiomas + botones en mobile */}
-          <div className="border-t border-white/20 pt-4 space-y-3">
-            <button className="flex items-center space-x-2">
-              <span className="text-xl">{languageOptions[0].flag}</span>
-              <span>ES</span>
-            </button>
-
-            {/* Botones condicionales para móvil */}
-            {isProfileRoute ? (
-              walletAddress ? (
-                <span className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md">
-                  <FaWallet className="mr-2" />
-                  {formatWalletAddress(walletAddress)}
-                </span>
+          {/* Wallet options */}
+          {isProfileRoute && (
+            <div className="mt-4 space-y-4">
+              {walletAddress ? (
+                <div className="flex flex-col items-stretch space-y-4">
+                  <span className="flex items-center justify-center space-x-2 px-3 py-2 bg-orange-500 text-white rounded-md text-sm font-medium shadow-md">
+                    <FaWallet className="mr-2" />
+                    <span>{formatWalletAddress(walletAddress)}</span>
+                  </span>
+                  <button
+                    onClick={() => {
+                      disconnectWallet();
+                      setMobileOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-red-500 text-white rounded-md text-sm font-medium hover:bg-red-600 transition shadow-md"
+                  >
+                    <FaTimes className="mr-2" />
+                    <span>Desconectar</span>
+                  </button>
+                </div>
               ) : (
                 <button
-                  onClick={connectWallet}
-                  className="flex items-center justify-center w-full px-4 py-2 bg-orange-500 text-white rounded-md"
+                  onClick={() => {
+                    connectWallet();
+                    setMobileOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-orange-500 text-white rounded-md text-sm font-medium hover:bg-orange-600 transition shadow-md"
                 >
                   <FaWallet className="mr-2" />
-                  Conectar Wallet
+                  <span>Conectar Wallet</span>
                 </button>
-              )
-            ) : (
-              <>
-                 (
-                user?.profilePicture && (
-                  <img
-                    src="/user_profile.png"
-                    alt="Foto de perfil"
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 rounded-full object-cover mb-2"
-                  />
-                )
-                <Link
-                  href="/?form=register"
-                  className="block px-4 py-2 bg-white text-[var(--bg-dark-blue)] rounded-md text-center"
-                >
-                  Registrarse
-                </Link>
-                <Link
-                  href="/?form=login"
-                  className="block px-4 py-2 border border-white rounded-md text-center"
-                >
-                  Iniciar sesión
-                </Link>
-              </>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </nav>
       )}
     </header>

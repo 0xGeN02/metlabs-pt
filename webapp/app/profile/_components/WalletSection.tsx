@@ -7,7 +7,7 @@ interface WalletData {
   balance: number;
 }
 
-const WalletSection = (props: {jwt: string}) => {
+const WalletSection = (props: {userId: string}) => {
   const [walletData, setWalletData] = useState<WalletData | null>(null);
 
   const depositSchema = z.object({
@@ -17,7 +17,7 @@ const WalletSection = (props: {jwt: string}) => {
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/api/wallet'); // Adjust endpoint as needed
+        const response = await fetch('http://localhost:3000/api/wallet');
         if (!response.ok) {
           throw new Error('Failed to fetch wallet data');
         }

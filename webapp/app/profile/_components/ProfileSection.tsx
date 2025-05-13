@@ -10,19 +10,19 @@ if (!serverHost) {
   throw new Error('NEXT_PUBLIC_BETTER_AUTH_URL is not defined');
 }
 
-const ProfileSection = (props: {jwt: string}) => {
+const ProfileSection = (props: {userId: string}) => {
   const [userData, setUserData] = useState<UserData | null>(null);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch('/api/user/jwt', {
+        const response = await fetch(`http://localhost:3000/api/user/${props.userId}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${props.jwt}`,
+            'Authorization': `Bearer ${props.userId}`,
           },
-          body: JSON.stringify({ jwt: props.jwt }),
+          body: JSON.stringify({ userId: props.userId }),
 
         });
         if (!response.ok) { 

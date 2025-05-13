@@ -3,9 +3,9 @@ import { useState } from 'react';
 import ProfileSection from './ProfileSection';
 import WalletSection from './WalletSection';
 
-const ProfileContent = (props: {jwt: string}) => {
+const ProfileContent = (props: {userId: string}) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'wallet'>('profile');
-  const token = props.jwt;
+  const token = props.userId;
   if (!token) {
     console.error('No se encontró el token de autenticación en localStorage');
     return <div>Error: No se encontró el token de autenticación</div>;
@@ -23,9 +23,9 @@ const ProfileContent = (props: {jwt: string}) => {
 
       <div className="tab-content">
         {activeTab === 'profile' ? (
-          <ProfileSection jwt={token} />
+          <ProfileSection userId={token} />
         ) : activeTab === 'wallet' ? (
-          <WalletSection jwt={token} />
+          <WalletSection userId={token} />
         ) : (
           <div>No se pudo cargar el contenido de la pestaña seleccionada.</div>
         )}
