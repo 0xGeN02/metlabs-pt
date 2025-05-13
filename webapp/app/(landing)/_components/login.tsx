@@ -53,7 +53,7 @@ export default function LoginForm() {
   const handleGoogle = () => {
     try{
     authClient
-      .signIn.social({ provider: "google", callbackURL: "/api/auth/callback/google" })
+      .signIn.social({ provider: "google", callbackURL: "http://localhost:3000/api/auth/callback/google" })
       .then((res) => {
         if (res?.data?.url) {
           router.push(res.data.url);
@@ -87,12 +87,10 @@ export default function LoginForm() {
         return;
       }
 
-      if (responseData.user && responseData.user.token) {
+      if (responseData.user && responseData.user.id) {
         toast.dismiss(loadingToast);
         toast.success("¡Inicio de sesión correcto!");
 
-        // Guarda el token y los datos del usuario en localStorage
-        localStorage.setItem("jwt", responseData.user.token);
         localStorage.setItem("user", JSON.stringify(responseData.user));
 
         router.push("/profile");

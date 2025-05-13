@@ -35,15 +35,16 @@ export default function Header() {
 
   const connectWallet = async () => {
     const wallets = await onboard.connectWallet();
+
     if (wallets && wallets.length > 0) {
       const address = wallets[0].accounts[0].address;
-      await fetch('/api/user/wallet', {
+      await fetch('http://localhost:3000/api/wallet', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user?.token}`
         },
-        body: JSON.stringify({ address }),
+        body: JSON.stringify({ address, userId: user?.id }),
       });
       toast.info(`Wallet conectada`);
       setWalletAddress(address);

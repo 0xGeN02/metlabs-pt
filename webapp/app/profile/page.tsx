@@ -5,26 +5,34 @@ import Header from "../_components/header";
 import ProfileContent from "./_components/ProfileContent";
 
 const Profile = () => {
-    const [jwt, setJwt] = useState<string | null>(null);
+    const [user, setUser] = useState<string | null>(null);
 
     useEffect(() => {
-        const token: string | null = localStorage.getItem('jwt');
-        if (!token) {
-            console.error('No se encontró el token de autenticación en localStorage');
+        const user: string | null = localStorage.getItem('user');
+        if (!user) {
+            console.error('No se encontró el userId de autenticación en localStorage');
             return;
         }
-        setJwt(token);
-        console.log('Token:', token);
+        setUser(user);
+        console.log('user:', user);
     }, []);
 
-    if (!jwt) {
-        return <div>Error: No se encontró el token de autenticación</div>;
+    const userId = user ? JSON.parse(user).id : null;
+    console.log('userId:', userId);
+    if (!userId) {
+        return (
+            <div className="flex flex-col max-h-screen">
+                <Header />
+                    <div><h1>Error: No se encontró el userId de autenticación</h1></div>;
+                <Footer />
+            </div>
+        );
     }
 
     return (
-        <div>
+        <div className="flex flex-col max-h-screen">
             <Header />
-            <ProfileContent jwt={jwt} />
+            <ProfileContent jwt={userId} />
             <Footer />
         </div>
     );

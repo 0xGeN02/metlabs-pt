@@ -5,7 +5,7 @@ interface UserData {
     name: string;
     email: string;
 }
-const serverHost = process.env.NEXT_PUBLIC_BETTER_AUTH_URL as string || 'http://localhost:3010'
+const serverHost = process.env.NEXT_PUBLIC_BETTER_AUTH_URL as string || 'http://localhost:3000'
 if (!serverHost) {
   throw new Error('NEXT_PUBLIC_BETTER_AUTH_URL is not defined');
 }
