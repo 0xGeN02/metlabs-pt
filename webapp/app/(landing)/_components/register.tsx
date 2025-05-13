@@ -90,7 +90,7 @@ export default function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     try {
       const loadingToast = toast.loading("Registrando usuario...");
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch("http://localhost:3000/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,7 +111,7 @@ export default function RegisterForm() {
         toast.error(errorData.error || "Error al registrar usuario");
         return;
       }
-      if (responseData.user && responseData.user.token) {
+      if (responseData.user) {
         // Redirigir al usuario a la página de perfil
         toast.dismiss(loadingToast);
         toast.success("¡Registro exitoso!");

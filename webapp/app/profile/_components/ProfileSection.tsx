@@ -16,17 +16,22 @@ const ProfileSection = (props: {jwt: string}) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await fetch(`${serverHost}/api/user/jwt`, {
+        const response = await fetch('/api/user/jwt', {
           method: 'GET',
-          credentials: 'include', // Include cookies in the request
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${props.jwt}`,
+          },
+          body: JSON.stringify({ jwt: props.jwt }),
+
         });
-        if (!response.ok) {
+        if (!response.ok) { 
           throw new Error('Failed to fetch user data');
         }
         const data: UserData = await response.json();
         setUserData(data);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        throw new Error('Error fetching user data');
       }
     };
 

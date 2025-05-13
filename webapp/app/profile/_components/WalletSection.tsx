@@ -17,7 +17,7 @@ const WalletSection = (props: {jwt: string}) => {
   useEffect(() => {
     const fetchWalletData = async () => {
       try {
-        const response = await fetch('/api/wallet'); // Adjust endpoint as needed
+        const response = await fetch('http://localhost:3010/api/wallet'); // Adjust endpoint as needed
         if (!response.ok) {
           throw new Error('Failed to fetch wallet data');
         }
@@ -35,7 +35,7 @@ const WalletSection = (props: {jwt: string}) => {
     try {
       const parsed = depositSchema.parse({ amount });
 
-      const response = await fetch('/api/wallet/deposit', {
+      const response = await fetch('http://localhost:3010/api/wallet/deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(parsed),
@@ -51,7 +51,7 @@ const WalletSection = (props: {jwt: string}) => {
 
   const handleWithdraw = async () => {
     try {
-      const response = await fetch('/api/wallet/withdraw', {
+      const response = await fetch('http://localhost:3010/api/wallet/withdraw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       });
