@@ -2,39 +2,26 @@ import Onboard from '@web3-onboard/core'
 import injectedModule from '@web3-onboard/injected-wallets'
 import walletConnectModule from '@web3-onboard/injected-wallets'
 import coinbaseModule from '@web3-onboard/injected-wallets'
+import { ethers } from 'ethers';
 
 const injected = injectedModule()
 const walletConnect = walletConnectModule()
 const coinbase = coinbaseModule()
 
+const alchemyApiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_URL as string
+if (!alchemyApiKey) {
+  throw new Error('Alchemy API key is not defined in environment variables')
+}
+
 const onboard = Onboard({
   wallets: [injected, walletConnect, coinbase],
   chains: [
     {
-      id: '0x1',
+      id: '11155111',
       token: 'ETH',
-      label: 'Ethereum Mainnet',
-      rpcUrl: 'https://mainnet.infura.io/v3/<YOUR_INFURA_KEY>'
-    },
-    {
-        id: '137',
-        token: 'POL',
-        label: 'Polygon Mainnet',
-        rpcUrl: 'https://polygon-rpc.com/'
-    },
-    {
-        id: '56',
-        token: 'BNB',
-        label: 'Binance Smart Chain Mainnet',
-        rpcUrl: 'https://bsc-dataseed.binance.org/'
-    },
-    {
-        id: '43114',
-        token: 'AVAX',
-        label: 'Avalanche Mainnet',
-        rpcUrl: 'https://api.avax.network/ext/bc/C/rpc'
+      label: 'Ethereum Sepolia Testnet',
+      rpcUrl: alchemyApiKey
     }
-    
   ],
   appMetadata: {
     name: 'Logo',
@@ -43,5 +30,31 @@ const onboard = Onboard({
   },
   theme: 'dark'
 })
+
+// Function to get the connected wallet's address
+export async function getConnectedWallet() {
+  const wallets = await onboard.connectWallet();
+  if (wallets.length === 0) {
+    throw new Error('No wallet connected');
+  }
+  return wallets[0].accounts[0].address;
+}
+
+// Function to get the signer for the connected wallet
+export async function getSigner() {
+  const wallets = await onboard.connectWallet();
+  if (wallets.length === 0) {
+    throw new Error('No wallet connected');
+  }
+
+  const provider = new ethers.BrowserProvider(wallets[0].provider, 'any');
+  return provider.getSigner();
+}
+
+// Function to connect the contract with the user's signer
+export async function getContractWithSigner(contractAddress: string, abi: any) {
+  const signer = await getSigner();
+  return new ethers.Contract(contractAddress, abi, signer);
+}
 
 export default onboard

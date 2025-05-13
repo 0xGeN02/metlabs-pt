@@ -51,14 +51,20 @@ export default function LoginForm() {
   };
 
   const handleGoogle = () => {
+    try{
     authClient
       .signIn.social({ provider: "google", callbackURL: "/api/auth/callback/google" })
-      .then(() => {
-        toast.success("¡Inicio de sesión correcto!");
-      })
-      .catch(() => {
-        toast.error("Error al iniciar sesión con Google");
+      .then((res) => {
+        if (res?.data?.url) {
+          router.push(res.data.url);
+          toast.success("Redirigiendo a Google para iniciar sesión...");
+        } else {
+          toast.error("Error al iniciar sesión con Google");
+        }
       });
+    } catch (error) {
+      toast.error("Error al iniciar sesión con Google");
+    }
   };
 
   const onSubmit = async (data: FormData) => {

@@ -71,14 +71,20 @@ export default function RegisterForm() {
   const toggleConfirmVisibility = () => setShowConfirm((v) => !v);
 
   const handleGoogle = () => {
+    try{
     authClient
       .signIn.social({ provider: "google", callbackURL: "/api/auth/callback/google" })
-      .then(() => {
-        toast.success("¡Registro correcto con Google!");
-      })
-      .catch(() => {
-        toast.error("Error al registrarse con Google");
+      .then((res) => {
+        if (res?.data?.url) {
+          router.push(res.data.url);
+          toast.success("Redirigiendo a Google para registrarte...");
+        } else {
+          toast.error("Error al registrate con Google");
+        }
       });
+    } catch (error) {
+      toast.error("Error al registrarte con Google");
+    }
   };
 
   const onSubmit = async (data: RegisterFormData) => {
