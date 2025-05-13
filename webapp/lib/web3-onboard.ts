@@ -33,24 +33,31 @@ const onboard = Onboard({
 
 // Función para registrar la wallet del usuario en la base de datos
 async function registerWallet(address: string) {
-  const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+  try {
+    const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
 
-  if (!token) {
-    throw new Error('No authentication token found');
-  }
+    if (!token) {
+      throw new Error('No se encontró el token de autenticación');
+    }
 
-  const response = await fetch('/api/wallet', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify({ address })
-  });
+    const response = await fetch('/api/wallet', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ address })
+    });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to register wallet');
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Error al registrar la wallet');
+    }
+
+    console.log('Wallet registrada exitosamente');
+  } catch (error) {
+    console.error('Error al registrar la wallet:', error);
+    throw error;
   }
 }
 
