@@ -31,13 +31,42 @@ const onboard = Onboard({
   theme: 'dark'
 })
 
+// Función para registrar la wallet del usuario en la base de datos
+async function registerWallet(address: string) {
+  const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
+
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+
+  const response = await fetch('/api/wallet', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ address })
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to register wallet');
+  }
+}
+
 // Function to get the connected wallet's address
 export async function getConnectedWallet() {
   const wallets = await onboard.connectWallet();
   if (wallets.length === 0) {
     throw new Error('No wallet connected');
   }
-  return wallets[0].accounts[0].address;
+
+  const address = wallets[0].accounts[0].address;
+
+  // Registrar la wallet en la base de datos
+  await registerWallet(address);
+
+  return address;
 }
 
 // Function to get the signer for the connected wallet
