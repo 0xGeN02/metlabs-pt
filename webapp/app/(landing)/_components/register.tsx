@@ -72,7 +72,7 @@ export default function RegisterForm() {
 
   const handleGoogle = () => {
     authClient
-      .signIn.social({ provider: "google", callbackURL: "/api/auth/sign-in/social" })
+      .signIn.social({ provider: "google", callbackURL: "/api/auth/callback/google" })
       .then(() => {
         toast.success("¡Registro correcto con Google!");
       })

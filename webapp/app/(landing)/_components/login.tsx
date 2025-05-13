@@ -52,7 +52,7 @@ export default function LoginForm() {
 
   const handleGoogle = () => {
     authClient
-      .signIn.social({ provider: "google", callbackURL: "/api/auth/sign-in/social" })
+      .signIn.social({ provider: "google", callbackURL: "/api/auth/callback/google" })
       .then(() => {
         toast.success("¡Inicio de sesión correcto!");
       })
@@ -203,6 +203,7 @@ export default function LoginForm() {
       {/* Google */}
       <button
         onClick={handleGoogle}
+        type="button"
         className="w-full flex items-center justify-center border-2 border-[var(--bg-dark-blue)] rounded-lg py-3 hover:bg-[var(--bg-dark-blue)]/10 transition"
       >
         <FcGoogle className="mr-3" size={24}/>
