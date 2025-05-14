@@ -16,7 +16,7 @@ const WalletSection = (props: { userId: string; walletData: WalletData | null })
   let counter = 1000;
 
   const data = useMemo(() => [
-    { key: 'Address', value: props.walletData?.public_key || 'N/A' },
+    { key: 'Address', value: localStorage.getItem("walletAddress") || 'N/A' },
     { key: 'Balance', value: `${counter} ETH` },
     { key: 'Transaction Hash', value: transactionHash || 'N/A' },
   ], [props.walletData, counter, transactionHash]);

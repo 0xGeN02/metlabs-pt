@@ -73,13 +73,12 @@ const Profile = () => {
         const fetchUserData = async (userId: string): Promise<UserData | null> => {
             try {
                 const response = await fetch(
-                    `http://localhost:3000/api/user/`,
+                    `http://localhost:3000/api/user/${userId}`,
                     {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ userId }),
                     }
                 );
 
@@ -104,13 +103,12 @@ const Profile = () => {
         ): Promise<WalletData | null> => {
             try {
                 const response = await fetch(
-                    `http://localhost:3000/api/wallet/`,
+                    `http://localhost:3000/api/wallet/${userId}`,
                     {
                         method: "GET",
                         headers: {
                             "Content-Type": "application/json",
                         },
-                        body: JSON.stringify({ userId }),
                     }
                 );
 
@@ -130,16 +128,22 @@ const Profile = () => {
             }
         };
 
+        if (!isWalletConnected || !walletAddress) {
+            console.log("La wallet no está conectada. Esperando conexión...");
+            return;
+        }
+
         if (userId) {
             setIsFetchingData(true);
-            Promise.all([fetchUserData(userId), fetchWalletData(userId)])
-                .then(([userData, walletData]) => {
-                    setUserData(userData);
-                    setWalletData(walletData);
-                })
-                .finally(() => setIsFetchingData(false));
+            (async () => {
+                const userData = await fetchUserData(userId);
+                const walletData = await fetchWalletData(userId);
+                setUserData(userData);
+                setWalletData(walletData);
+                setIsFetchingData(false);
+            })();
         }
-    }, [userId]);
+    }, [isWalletConnected, walletAddress, userId]);
 
     if (!isWalletConnected) {
         return (
