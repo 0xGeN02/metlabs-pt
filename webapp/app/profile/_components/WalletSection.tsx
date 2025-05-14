@@ -4,53 +4,35 @@ import { z } from 'zod';
 
 interface WalletData {
   public_key: string;
-  balance: number;
+  userId: string;
 }
 
 const WalletSection = (props: { userId: string; walletData: WalletData | null }) => {
   const [walletData, setWalletData] = useState<WalletData | null>(props.walletData);
-
+  const [transactionHash, setTransactionHash] = useState<string | null>(null); // Nuevo estado para el hash de la transacción
+  const [isLoading, setIsLoading] = useState(false);
+  let counter = 1000;
   const depositSchema = z.object({
-    amount: z.number().positive("Amount must be a positive number"),
+    userId: z.string().nonempty("User ID is required"),
   });
 
-  useEffect(() => {
-    if (!walletData) {
-      const fetchWalletData = async () => {
-        try {
-          const response = await fetch('http://localhost:3000/api/wallet', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${props.userId}`,
-            },
-          });
-          if (!response.ok) {
-            throw new Error('Failed to fetch wallet data');
-          }
-          const data: WalletData = await response.json();
-          setWalletData(data);
-        } catch (error) {
-          console.error('Error fetching wallet data:', error);
-        }
-      };
-
-      fetchWalletData();
-    }
-  }, [props.userId, walletData]);
-
-  const handleDeposit = async (amount: number) => {
+  const handleDeposit = async (userId: string) => {
     try {
-      const parsed = depositSchema.parse({ amount });
+      const parsed = depositSchema.parse({ userId });
 
       const response = await fetch('http://localhost:3000/api/wallet/deposit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(parsed),
       });
+
       if (!response.ok) {
         throw new Error('Failed to deposit');
       }
+
+      const data = await response.json();
+      counter+=1;
+      setTransactionHash(data.transactionHash); // Guardar el hash de la transacción en el estado
       alert('Deposit successful');
     } catch (error) {
       console.error('Error during deposit:', error);
@@ -62,10 +44,16 @@ const WalletSection = (props: { userId: string; walletData: WalletData | null })
       const response = await fetch('http://localhost:3000/api/wallet/withdraw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: props.userId }),
       });
+
       if (!response.ok) {
         throw new Error('Failed to withdraw');
       }
+
+      const data = await response.json();
+      counter-=1;
+      setTransactionHash(data.transactionHash); // Guardar el hash de la transacción en el estado
       alert('Withdrawal successful');
     } catch (error) {
       console.error('Error during withdrawal:', error);
@@ -76,9 +64,18 @@ const WalletSection = (props: { userId: string; walletData: WalletData | null })
     <div className="wallet-section">
       <h2>Wallet</h2>
       <p><strong>Address:</strong> {walletData?.public_key}</p>
-      <p><strong>Balance:</strong> {walletData?.balance} ETH</p>
-      <button onClick={() => handleDeposit(1)}>Deposit 1 ETH</button>
-      <button onClick={handleWithdraw}>Withdraw</button>
+      <p><strong>Balance:</strong> {counter} ETH</p>
+      <button onClick={() => handleDeposit(props.userId)} disabled={isLoading}>
+        {isLoading ? 'Processing...' : 'Deposit 1 ETH'}
+      </button>
+      <button onClick={handleWithdraw} disabled={isLoading}>
+        {isLoading ? 'Processing...' : 'Withdraw'}
+      </button>
+      {transactionHash && (
+        <p>
+          <strong>Transaction Hash:</strong> {transactionHash}
+        </p>
+      )}
     </div>
   );
 };

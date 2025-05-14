@@ -7,10 +7,14 @@ import ProfileContent from "./_components/ProfileContent";
 interface UserData {
     name: string;
     email: string;
+    birth_date: string;
+    phone: string;
+    sex: string;
+    nationality: string;
 }
 interface WalletData {
-    public_key: string;
-    balance: number;
+  public_key: string;
+  userId: string;
 }
 
 const Profile = () => {
@@ -158,20 +162,6 @@ const Profile = () => {
                 <div className="flex flex-col h-screen justify-center items-center bg-gray-100">
                     <h1 className="text-xl font-semibold text-gray-700">
                         Cargando datos...
-                    </h1>
-                </div>
-                <Footer />
-            </main>
-        );
-    }
-
-    if (!userData || !walletData) {
-        return (
-            <main className="flex flex-col max-h-screen">
-                <Header onWalletChange={handleWalletChange} />
-                <div className="flex flex-col h-screen justify-center items-center bg-red-100">
-                    <h1 className="text-xl font-semibold text-red-600">
-                        Error al cargar los datos del perfil.
                     </h1>
                 </div>
                 <Footer />

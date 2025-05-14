@@ -6,11 +6,15 @@ import WalletSection from './WalletSection';
 interface UserData {
   name: string;
   email: string;
+  birth_date: string;
+  phone: string;
+  sex: string;
+  nationality: string;
 }
 
 interface WalletData {
   public_key: string;
-  balance: number;
+  userId: string;
 }
 
 const ProfileContent = (props: { userId: string; userData: UserData | null; walletData: WalletData | null }) => {
