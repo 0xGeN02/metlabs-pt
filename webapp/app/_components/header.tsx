@@ -127,7 +127,7 @@ export default function Header({
 								</span>
 								<button
 									onClick={disconnectWallet}
-									className="hidden sm:flex items-center space-x-1 px-3 py-1 bg-red-500 text-white rounded-md font-medium hover:bg-red-600 transition"
+									className="hidden sm:flex items-center space-x-1 px-3 py-1 bg-gray-700 text-white rounded-md font-medium hover:bg-gray-800 transition"
 								>
 									<FaTimes className="mr-1" />
 									<span>Desconectar</span>
@@ -136,7 +136,7 @@ export default function Header({
 						) : (
 							<button
 								onClick={connectWallet}
-								className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-orange-500 text-white rounded-md font-medium hover:bg-orange-600 transition"
+								className="hidden sm:flex items-center space-x-2 px-4 py-1.5 bg-gray-700 text-white rounded-md font-medium hover:bg-gray-800 transition"
 							>
 								<FaWallet className="mr-2" />
 								<span>Conectar Wallet</span>
