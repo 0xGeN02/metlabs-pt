@@ -6,10 +6,16 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { FaEye, FaEyeSlash } from "react-icons/fa6";
 import { FcGoogle } from "react-icons/fc";
+import Select from "react-select";
+import i18nIsoCountries from "i18n-iso-countries";
+import esLocale from "i18n-iso-countries/langs/es.json";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+
+// Registrar el idioma español para i18n-iso-countries
+i18nIsoCountries.registerLocale(esLocale);
 
 // Esquema Zod para registro
 const registerSchema = z.object({
@@ -40,6 +46,11 @@ const registerSchema = z.object({
   path: ["confirmPassword"],
 });
 type RegisterFormData = z.infer<typeof registerSchema>;
+
+const nationalityOptions = Object.entries(i18nIsoCountries.getNames("es", { select: "official" })).map(([code, name]) => ({
+  value: code,
+  label: name,
+}));
 
 export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
@@ -195,12 +206,15 @@ export default function RegisterForm() {
           <label htmlFor="nationality" className="block text-sm font-medium text-gray-700 mb-1">
             Nacionalidad
           </label>
-          <input
+          <Select
             id="nationality"
-            type="text"
-            placeholder="Tu nacionalidad"
-            className={`w-full px-3 py-2 border ${errors.nationality ? "border-red-500" : "border-gray-300"} rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--bg-dark-blue)]`}
-            {...register("nationality")}
+            options={nationalityOptions}
+            classNamePrefix="react-select"
+            onChange={(selectedOption) => {
+              const event = { target: { name: "nationality", value: selectedOption?.value } };
+              register("nationality").onChange(event);
+            }}
+            placeholder="Selecciona tu nacionalidad"
           />
           {errors.nationality && <p className="text-red-500 text-xs mt-1">{errors.nationality.message}</p>}
         </div>
