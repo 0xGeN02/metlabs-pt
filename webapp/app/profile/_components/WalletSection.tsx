@@ -1,17 +1,41 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { z } from 'zod';
+import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
 interface WalletData {
   public_key: string;
   userId: string;
 }
 
+const columnHelper = createColumnHelper<{ key: string; value: string }>();
+
 const WalletSection = (props: { userId: string; walletData: WalletData | null }) => {
-  const [walletData, setWalletData] = useState<WalletData | null>(props.walletData);
-  const [transactionHash, setTransactionHash] = useState<string | null>(null); // Nuevo estado para el hash de la transacción
+  const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   let counter = 1000;
+
+  const data = useMemo(() => [
+    { key: 'Address', value: props.walletData?.public_key || 'N/A' },
+    { key: 'Balance', value: `${counter} ETH` },
+    { key: 'Transaction Hash', value: transactionHash || 'N/A' },
+  ], [props.walletData, counter, transactionHash]);
+
+  const columns = useMemo(() => [
+    columnHelper.accessor('key', {
+      header: 'Field',
+    }),
+    columnHelper.accessor('value', {
+      header: 'Value',
+    }),
+  ], []);
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   const depositSchema = z.object({
     userId: z.string().nonempty("User ID is required"),
   });
@@ -61,21 +85,38 @@ const WalletSection = (props: { userId: string; walletData: WalletData | null })
   };
 
   return (
-    <div className="wallet-section">
-      <h2>Wallet</h2>
-      <p><strong>Address:</strong> {walletData?.public_key}</p>
-      <p><strong>Balance:</strong> {counter} ETH</p>
-      <button onClick={() => handleDeposit(props.userId)} disabled={isLoading}>
+    <div className="wallet-section bg-white shadow-lg rounded-lg p-6 border border-gray-200">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Wallet</h2>
+      <table className="min-w-full border-collapse border border-gray-300">
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id} className="border border-gray-300 px-4 py-2 bg-gray-100">
+                  {typeof header.column.columnDef.header === 'function' ? header.column.columnDef.header(header.getContext()) : header.column.columnDef.header}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id} className="border border-gray-300">
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id} className="border border-gray-300 px-4 py-2">
+                  {typeof cell.column.columnDef.cell === 'function' ? cell.column.columnDef.cell(cell.getContext()) : cell.column.columnDef.cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50 mt-4" onClick={() => handleDeposit(props.userId)} disabled={isLoading}>
         {isLoading ? 'Processing...' : 'Deposit 1 ETH'}
       </button>
-      <button onClick={handleWithdraw} disabled={isLoading}>
+      <button className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 disabled:opacity-50 ml-2 mt-4" onClick={handleWithdraw} disabled={isLoading}>
         {isLoading ? 'Processing...' : 'Withdraw'}
       </button>
-      {transactionHash && (
-        <p>
-          <strong>Transaction Hash:</strong> {transactionHash}
-        </p>
-      )}
     </div>
   );
 };
