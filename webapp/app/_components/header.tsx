@@ -53,7 +53,7 @@ export default function Header() {
   };
 
   const disconnectWallet = () => {
-    onboard.disconnectWallet({ label: "MetaMask" }); // Desconectar wallet (puedes ajustar el label según el proveedor)
+    onboard.disconnectWallet({ label: "MetaMask" }); 
     setWalletAddress(null);
     setWalletData(null);
     toast.info("Wallet desconectada");
@@ -63,26 +63,22 @@ export default function Header() {
     // Fetch wallet section data when wallet is connected
     const fetchWalletData = async () => {
       if (walletAddress) {
-        try {
           const response = await fetch(
-            `http://localhost:3000/api/wallet/section?address=${walletAddress}`,
+            `http://localhost:3000/api/wallet/`,
             {
               headers: {
                 Authorization: `Bearer ${user?.token}`,
               },
+              method: "GET",
+              body: JSON.stringify({ userId: user?.id }),
             }
           );
-          if (response.ok) {
+          if (response.status === 201) {
             const data = await response.json();
             setWalletData(data);
             toast.success("Datos de la wallet cargados correctamente");
-          } else {
-            toast.error("Error al cargar los datos de la wallet");
-          }
-        } catch (error) {
-          console.error("Error fetching wallet data:", error);
-          toast.error("Error al cargar los datos de la wallet");
-        }
+            localStorage.setItem("walletAddress", walletAddress);
+          } 
       }
     };
 

@@ -65,7 +65,7 @@ const WalletSection = (props: {userId: string}) => {
   };
 
   if (!walletData) {
-    return <div>Loading...</div>;
+    return <div>Loading2...</div>;
   }
 
   return (
