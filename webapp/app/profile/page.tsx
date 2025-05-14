@@ -10,6 +10,17 @@ const Profile = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [walletAddress, setWalletAddress] = useState<string | null>(null);
     const [isFetchingData, setIsFetchingData] = useState<boolean>(false);
+    const [isWalletConnected, setIsWalletConnected] = useState<boolean>(false);
+
+    const handleWalletChange = (isConnected: boolean) => {
+        setIsWalletConnected(isConnected);
+        if (isConnected) {
+            const wallet = localStorage.getItem('walletAddress');
+            setWalletAddress(wallet);
+        } else {
+            setWalletAddress(null);
+        }
+    };
 
     useEffect(() => {
         const checkWalletConnection = () => {
@@ -40,12 +51,26 @@ const Profile = () => {
         }
     }, [walletAddress]);
 
+    useEffect(() => {
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'walletAddress' && event.newValue) {
+                setWalletAddress(event.newValue);
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
+    }, []);
+
     const userId = user ? JSON.parse(user).id : null;
 
-    if (!walletAddress) {
+    if (!isWalletConnected) {
         return (
             <main className="flex flex-col max-h-screen">
-                <Header />
+                <Header onWalletChange={handleWalletChange} />
                 <div className="flex flex-col h-screen justify-center items-center bg-red-100">
                     <h1 className="text-xl font-semibold text-red-600">
                         Por favor, conecta tu wallet para acceder al contenido del perfil.
@@ -59,7 +84,7 @@ const Profile = () => {
     if (isFetchingData) {
         return (
             <main className="flex flex-col max-h-screen">
-                <Header />
+                <Header onWalletChange={handleWalletChange} />
                 <div className="flex flex-col h-screen justify-center items-center bg-gray-100">
                     <h1 className="text-xl font-semibold text-gray-700">Cargando datos...</h1>
                 </div>
@@ -70,7 +95,7 @@ const Profile = () => {
 
     return (
         <main className="flex flex-col max-h-screen">
-            <Header />
+            <Header onWalletChange={handleWalletChange} />
             <h1 className="text-2xl font-bold text-center mt-4">Perfil de Usuario</h1>
             <ProfileContent userId={userId} />
             <Footer />
