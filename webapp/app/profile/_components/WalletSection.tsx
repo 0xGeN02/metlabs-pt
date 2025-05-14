@@ -7,29 +7,37 @@ interface WalletData {
   balance: number;
 }
 
-const WalletSection = (props: {userId: string}) => {
-  const [walletData, setWalletData] = useState<WalletData | null>(null);
+const WalletSection = (props: { userId: string; walletData: WalletData | null }) => {
+  const [walletData, setWalletData] = useState<WalletData | null>(props.walletData);
 
   const depositSchema = z.object({
     amount: z.number().positive("Amount must be a positive number"),
   });
 
   useEffect(() => {
-    const fetchWalletData = async () => {
-      try {
-        const response = await fetch('http://localhost:3000/api/wallet');
-        if (!response.ok) {
-          throw new Error('Failed to fetch wallet data');
+    if (!walletData) {
+      const fetchWalletData = async () => {
+        try {
+          const response = await fetch('http://localhost:3000/api/wallet', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${props.userId}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch wallet data');
+          }
+          const data: WalletData = await response.json();
+          setWalletData(data);
+        } catch (error) {
+          console.error('Error fetching wallet data:', error);
         }
-        const data: WalletData = await response.json();
-        setWalletData(data);
-      } catch (error) {
-        console.error('Error fetching wallet data:', error);
-      }
-    };
+      };
 
-    fetchWalletData();
-  }, []);
+      fetchWalletData();
+    }
+  }, [props.userId, walletData]);
 
   const handleDeposit = async (amount: number) => {
     try {
@@ -64,15 +72,11 @@ const WalletSection = (props: {userId: string}) => {
     }
   };
 
-  if (!walletData) {
-    return <div>Loading2...</div>;
-  }
-
   return (
     <div className="wallet-section">
       <h2>Wallet</h2>
-      <p><strong>Address:</strong> {walletData.public_key}</p>
-      <p><strong>Balance:</strong> {walletData.balance} ETH</p>
+      <p><strong>Address:</strong> {walletData?.public_key}</p>
+      <p><strong>Balance:</strong> {walletData?.balance} ETH</p>
       <button onClick={() => handleDeposit(1)}>Deposit 1 ETH</button>
       <button onClick={handleWithdraw}>Withdraw</button>
     </div>

@@ -3,12 +3,23 @@ import { useState } from 'react';
 import ProfileSection from './ProfileSection';
 import WalletSection from './WalletSection';
 
-const ProfileContent = (props: {userId: string}) => {
+interface UserData {
+  name: string;
+  email: string;
+}
+
+interface WalletData {
+  public_key: string;
+  balance: number;
+}
+
+const ProfileContent = (props: { userId: string; userData: UserData | null; walletData: WalletData | null }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'wallet'>('profile');
 
   if (!props.userId) {
     return <div>Error: No se encontró el token de autenticación</div>;
   }
+
   return (
     <div className="profile-content">
       <div className="tabs">
@@ -22,9 +33,9 @@ const ProfileContent = (props: {userId: string}) => {
 
       <div className="tab-content">
         {activeTab === 'profile' ? (
-          <ProfileSection userId={props.userId} />
+          <ProfileSection userId={props.userId} userData={props.userData as UserData} />
         ) : activeTab === 'wallet' ? (
-          <WalletSection userId={props.userId} />
+          <WalletSection userId={props.userId} walletData={props.walletData as WalletData} />
         ) : (
           <div>No se pudo cargar el contenido de la pestaña seleccionada.</div>
         )}

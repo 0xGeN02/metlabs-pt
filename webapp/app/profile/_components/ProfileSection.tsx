@@ -10,43 +10,38 @@ if (!serverHost) {
   throw new Error('NEXT_PUBLIC_BETTER_AUTH_URL is not defined');
 }
 
-const ProfileSection = (props: {userId: string}) => {
-  const [userData, setUserData] = useState<UserData | null>(null);
+const ProfileSection = (props: { userId: string; userData: UserData | null }) => {
+  const [userData, setUserData] = useState<UserData | null>(props.userData);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`http://localhost:3000/api/user/${props.userId}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${props.userId}`,
-          },
-          body: JSON.stringify({ userId: props.userId }),
-
-        });
-        if (!response.ok) { 
-          throw new Error('Failed to fetch user data');
+    if (!userData) {
+      const fetchUserData = async () => {
+        try {
+          const response = await fetch(`http://localhost:3000/api/user/${props.userId}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${props.userId}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+          }
+          const data: UserData = await response.json();
+          setUserData(data);
+        } catch (error) {
+          console.error('Error fetching user data:', error);
         }
-        const data: UserData = await response.json();
-        setUserData(data);
-      } catch (error) {
-        throw new Error('Error fetching user data');
-      }
-    };
-
-    fetchUserData();
-  }, []);
-
-  if (!userData) {
-    return <div>Loading...</div>;
-  }
+      };
+      fetchUserData();
+    }
+  }, [props.userId, userData]);
 
   return (
     <div className="profile-section">
       <h2>Profile</h2>
-      <p><strong>Name:</strong> {userData.name}</p>
-      <p><strong>Email:</strong> {userData.email}</p>
+      <p><strong>Name:</strong> {userData?.name}</p>
+      <p><strong>Email:</strong> {userData?.email}</p>
     </div>
   );
 };
