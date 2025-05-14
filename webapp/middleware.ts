@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth_token');
 
   // Rutas públicas a las que se puede acceder sin autenticación
-  const publicRoutes = ['/', '/auth/login', '/auth/register', '/api/auth/callback/google'];
+  const publicRoutes = ['/', '/auth/login', '/auth/register', '/api/auth/callback/google', '/api/auth/sign-in/social', '/api/auth/forgot-password'];
 
   if (!token && !publicRoutes.some((route) => request.nextUrl.pathname.startsWith(route))) {
     // Redirigir a login si no tiene token y está intentando acceder a una ruta protegida

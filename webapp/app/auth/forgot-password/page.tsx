@@ -34,15 +34,28 @@ export default function ForgotPasswordPage() {
     try {
       setIsSubmitting(true);
       const loadingToast = toast.loading("Enviando...");
-      
-      // Simulate API call - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+
+      const response = await fetch("http://localhost:3000/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
       toast.dismiss(loadingToast);
-      toast.success("Instrucciones enviadas a tu correo");
-      setEmailSent(true);
+
+      if (response.ok) {
+        toast.success(result.message || "Instrucciones enviadas a tu correo");
+        setEmailSent(true);
+      } else {
+        toast.error(result.error || "Error al enviar");
+      }
     } catch (error) {
       toast.error("Error al enviar");
+      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
