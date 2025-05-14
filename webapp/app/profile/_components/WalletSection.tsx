@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { z } from 'zod';
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 
@@ -87,23 +87,23 @@ const WalletSection = (props: { userId: string; walletData: WalletData | null })
   return (
     <div className="wallet-section bg-white shadow-lg rounded-lg p-6 border border-gray-200">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Wallet</h2>
-      <table className="min-w-full border-collapse border border-gray-300">
-        <thead>
+      <table className="min-w-full border-collapse border border-gray-300 rounded-lg overflow-hidden shadow-md">
+        <thead className="bg-blue-500 text-white">
           {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => (
-                <th key={header.id} className="border border-gray-300 px-4 py-2 bg-gray-100">
+                <th key={header.id} className="border border-gray-300 px-4 py-2 text-left font-semibold">
                   {typeof header.column.columnDef.header === 'function' ? header.column.columnDef.header(header.getContext()) : header.column.columnDef.header}
                 </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="bg-white">
           {table.getRowModel().rows.map(row => (
-            <tr key={row.id} className="border border-gray-300">
+            <tr key={row.id} className="hover:bg-gray-100 transition-colors">
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} className="border border-gray-300 px-4 py-2">
+                <td key={cell.id} className="border border-gray-300 px-4 py-2 text-gray-700">
                   {typeof cell.column.columnDef.cell === 'function' ? cell.column.columnDef.cell(cell.getContext()) : cell.column.columnDef.cell}
                 </td>
               ))}
